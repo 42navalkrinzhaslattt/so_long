@@ -8,37 +8,62 @@
 #include "../libft/includes/libft.h"
 # define BUFF_SIZE 100000
 
-typedef struct s_mlx_data
+typedef struct s_textures
 {
-	void	*mlx;
-	void	*win;
-	void	*img;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-}	t_mlx_data;
+	void	*w;
+	void	*c;
+	void	*e;
+	void	*d;
+	void	*u;
+	void	*r;
+	void	*l;
+	void	*f;
+}	t_textures;
+
+typedef struct s_player
+{
+	int		x;
+	int		y;
+	char	orient;
+	int		score;
+	int		moves;
+}	t_player;
 
 typedef struct s_game
 {
-	char	**map;
-	int		map_height;
-	int		map_width;
-	int		start_x;
-	int		start_y;
-	int		coins;
-
+	void		*mlx;
+	void		*win;
+	char		**map;
+	int			map_height;
+	int			map_width;
+	int			coins;
+	int			end_flag;
+	t_player	player;
+	t_textures		txt;
 }	t_game;
 
 //input_check.c
-char	*parse_map(char *file);
 int		get_characters(char **map, int *characters, t_game *game);
+void	flood_fill(int y, int x, t_game *game, int *exit_flag);
 int		flood_fill_check(t_game *game);
 int		map_check(char **map, t_game *game);
 int		input_check(char *filename, t_game *game);
 //so_long.c
 int		main(int ac, char **av);
+int		init_textures(t_game *game);
 //utils.c
-int		exit_error();
+int		exit_error(t_game *game);
 int		free_map(char **map);
+int		end_game(t_game *game);
+char	*parse_map(char *file);
+//hooks.c
+void	mv_right(t_game *game);
+void	mv_down(t_game *game);
+void	mv_left(t_game *game);
+void	mv_up(t_game *game);
+int		key_hooks(int keycode, t_game *game);
+//render.c
+void	render_map(t_game *game);
+void	put_item(int x, int y, t_game *game, char type);
+
 #endif

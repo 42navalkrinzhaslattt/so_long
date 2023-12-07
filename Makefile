@@ -1,6 +1,6 @@
 NAME	= so_long
 
-SRC = so_long.c
+SRC = so_long.c input_check.c utils.c hooks.c render.c
 
 SRC_DIR = srcs/
 
@@ -15,7 +15,7 @@ CC			= cc
 CFLAGS		= -Wall -Werror -Wextra
 
 %.o: %.c
-	$(CC) $(CFLAGS) -Iincludes -I/usr/include -Imlx_linux -O3 -c  $< -o $@
+	$(CC) $(CFLAGS) -I ./includes -I/usr/include -Imlx_linux -O3 -c  $< -o $@
 
 all: $(NAME)
 

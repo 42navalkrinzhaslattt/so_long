@@ -11,52 +11,23 @@
 /* ************************************************************************** */
 
 #include "so_long.h"
-#include "../includes/so_long.h"
+//#include "../includes/so_long.h"
 
-char	*parse_map(char *file)
-{
-	char		*res;
-	char		buf[BUFF_SIZE + 1];
-	int			fd;
-	ssize_t		nbytes;
-	ssize_t		size;
-
-	fd = open(file, O_RDONLY);
-	size = 0;
-	nbytes = read(fd, buf, BUFF_SIZE);
-	while (nbytes > 0)
-	{
-		size += nbytes;
-		nbytes = read(fd, buf, BUFF_SIZE);
-	}
-	close(fd);
-	fd = open(file, O_RDONLY);
-	if (fd == -1)
-		return (NULL);
-	res = (char *)malloc((size + 1) * sizeof(char));
-	if (!res)
-		return (NULL);
-	read(fd, res, size);
-	res[size] = 0;
-	close(fd);
-	return (res);
-}
-
-int get_characters(char **map, int *characters, t_game *game)
+int	get_characters(char **map, int *characters, t_game *game)
 {
 	int	i;
 	int	j;
 
 	i = -1;
-	while (++i < game->map_width)
+	while (++i < game->map_height)
 	{
 		j = -1;
-		while (++j < game->map_height)
+		while (++j < game->map_width)
 		{
 			if (map[i][j] == 'P')
 			{
-				game->start_y = i;
-				game->start_x = j;
+				game->player.y = i;
+				game->player.x = j;
 				(*characters)++;
 			}
 			else if (map[i][j] == 'E')
@@ -72,15 +43,24 @@ int get_characters(char **map, int *characters, t_game *game)
 
 void	flood_fill(int y, int x, t_game *game, int *exit_flag)
 {
-	if (game->map[y][x] == '1')
+	if (game->map[y][x] == '1' || game->map[y][x] == 'e'
+		|| game->map[y][x] == 'c' || game->map[y][x] == 'o'
+		|| game->map[y][x] == 'p')
 		return ;
 	if (game->map[y][x] == 'E')
+	{
+		game->map[y][x] = 'e';
 		*exit_flag = 1;
+	}
 	if (game->map[y][x] == 'C')
 	{
 		game->coins++;
 		game->map[y][x] = 'c';
 	}
+	if (game->map[y][x] == '0')
+		game->map[y][x] = 'o';
+	if (game->map[y][x] == 'P')
+		game->map[y][x] = 'p';
 	flood_fill(y + 1, x, game, exit_flag);
 	flood_fill(y - 1, x, game, exit_flag);
 	flood_fill(y, x + 1, game, exit_flag);
@@ -93,7 +73,7 @@ int	flood_fill_check(t_game *game)
 
 	exit_flag = 0;
 	game->coins = 0;
-	flood_fill(game->start_y, game->start_x, game, &exit_flag);
+	flood_fill(game->player.y, game->player.x, game, &exit_flag);
 	if (exit_flag != 1)
 		return (-1);
 	return (game->coins);
@@ -109,7 +89,7 @@ int	map_check(char **map, t_game *game)
 	i = -1;
 	while (map[++i])
 	{
-		if (ft_strlen(map[i]) != game->map_width || map[i][0] != '1'
+		if ((int)ft_strlen(map[i]) != game->map_width || map[i][0] != '1'
 			|| map[i][game->map_width - 1] != '1')
 			return (0);
 		if (i == 0 || !map[i + 1])
@@ -130,7 +110,6 @@ int	map_check(char **map, t_game *game)
 int	input_check(char *filename, t_game *game)
 {
 	int		len;
-	int		i;
 	char	*buf;
 
 	len = ft_strlen(filename);
@@ -143,4 +122,5 @@ int	input_check(char *filename, t_game *game)
 	if (!game->map || !game->map[0] || !game->map[1]
 		|| !game->map[2] || !map_check(game->map, game))
 		return (0);
+	return (1);
 }
