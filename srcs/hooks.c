@@ -131,6 +131,12 @@ void	mv_up(t_game *game)
 
 int	key_hooks(int keycode, t_game *game)
 {
+	int			x_start;
+	int			y_start;
+	static int	moves;
+
+	x_start = game->player.x;
+	y_start = game->player.y;
 	if (keycode == 119)
 		mv_up(game);
 	if (keycode == 97)
@@ -139,6 +145,8 @@ int	key_hooks(int keycode, t_game *game)
 		mv_down(game);
 	if (keycode == 100)
 		mv_right(game);
+	if (game->player.x != x_start || game->player.x != y_start)
+		ft_printf("Current number of moves: %i", moves++);
 	if (keycode == 65307 || game->end_flag == 1)
 		return (end_game(game));
 	return (0);

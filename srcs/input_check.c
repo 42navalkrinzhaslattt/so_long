@@ -102,7 +102,7 @@ int	map_check(char **map, t_game *game)
 	}
 	game->map_height = i;
 	if (!get_characters(map, &characters[0], game)
-		|| characters[0] != 1 || characters[1] != 1)
+		|| characters[0] != 1 || characters[1] != 1 || characters[2] < 1)
 		return (0);
 	return (characters[2] == flood_fill_check(game));
 }

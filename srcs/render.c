@@ -49,7 +49,7 @@ void	render_map(t_game *game)
 		x = -1;
 		while (++x < game->map_width)
 		{
-			if (game->map[x][y] == '1')
+			if (game->map[y][x] == '1')
 				mlx_put_image_to_window(game->mlx,
 					game->win, game->txt.w, 32 * x, 32 * y);
 			else
