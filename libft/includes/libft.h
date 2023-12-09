@@ -15,6 +15,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <stdint.h>
+# include "ft_printf.h"
+# include "get_next_line.h"
 
 typedef struct s_list
 {
@@ -65,5 +67,7 @@ void	ft_lstclear(t_list **lst, void (*del)(void*));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 t_list	*ft_lstlast(t_list *lst);
+int		ft_printf(const char *format, ...);
+char	*get_next_line(int fd);
 
 #endif

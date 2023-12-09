@@ -93,10 +93,10 @@ char	*parser(int fd, t_gnl *data)
 				data->flush_flag = 0;
 				return (NULL);
 			}
-			ft_lstadd_back(data, gnl_flush(data));
-			return (ft_lstjoin(data));
+			gnl_lstadd_back(data, gnl_flush(data));
+			return (gnl_lstjoin(data));
 		}
-		ft_lstadd_back(data, gnl_strdup(data->buf));
+		gnl_lstadd_back(data, gnl_strdup(data->buf));
 		gnl_memset(data->buf, 0, BUFFER_SIZE + 1);
 	}
 	return (NULL);
@@ -113,9 +113,9 @@ char	*get_next_line(int fd)
 	data.lst = NULL;
 	if (data.flush_flag == 1)
 	{
-		ft_lstadd_back(&data, gnl_flush(&data));
-		res = ft_lstjoin(&data);
-		ft_lstclear(&(data.lst), &free);
+		gnl_lstadd_back(&data, gnl_flush(&data));
+		res = gnl_lstjoin(&data);
+		gnl_lstclear(&(data.lst), &free);
 		if (res && res[0] == 0)
 		{
 			free(res);
@@ -123,8 +123,8 @@ char	*get_next_line(int fd)
 		}
 		return (res);
 	}
-	ft_lstadd_back(&data, gnl_flush(&data));
+	gnl_lstadd_back(&data, gnl_flush(&data));
 	res = parser(fd, &data);
-	ft_lstclear(&(data.lst), &free);
+	gnl_lstclear(&(data.lst), &free);
 	return (res);
 }

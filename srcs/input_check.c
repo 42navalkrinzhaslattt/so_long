@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "so_long.h"
-//#include "../includes/so_long.h"
 
 int	get_characters(char **map, int *characters, t_game *game)
 {

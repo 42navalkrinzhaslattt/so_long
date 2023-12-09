@@ -11,13 +11,34 @@
 /* ************************************************************************** */
 
 #include "so_long.h"
-//#include "../includes/so_long.h"
 
 int	exit_error(t_game *game)
 {
-	perror("Error\nInvalid map\n");
-	end_game(game);
-	return (-1);
+	ft_printf("Error\nInvalid map\n");
+	free_map(game->map);
+	if (game->txt.w && game->mlx)
+		mlx_destroy_image(game->mlx, game->txt.w);
+	if (game->txt.f && game->mlx)
+		mlx_destroy_image(game->mlx, game->txt.f);
+	if (game->txt.c && game->mlx)
+		mlx_destroy_image(game->mlx, game->txt.c);
+	if (game->txt.e && game->mlx)
+		mlx_destroy_image(game->mlx, game->txt.e);
+	if (game->txt.u && game->mlx)
+		mlx_destroy_image(game->mlx, game->txt.u);
+	if (game->txt.d && game->mlx)
+		mlx_destroy_image(game->mlx, game->txt.d);
+	if (game->txt.l && game->mlx)
+		mlx_destroy_image(game->mlx, game->txt.l);
+	if (game->txt.r && game->mlx)
+		mlx_destroy_image(game->mlx, game->txt.r);
+	if (game->win && game->mlx)
+		mlx_destroy_window(game->mlx, game->win);
+	if (game->mlx)
+		mlx_destroy_display(game->mlx);
+	if (game->mlx)
+		free(game->mlx);
+	exit(EXIT_FAILURE);
 }
 
 int	free_map(char **map)
@@ -44,11 +65,31 @@ int	end_game(t_game *game)
 	mlx_destroy_image(game->mlx, game->txt.d);
 	mlx_destroy_image(game->mlx, game->txt.l);
 	mlx_destroy_image(game->mlx, game->txt.r);
-	mlx_destroy_window(game->mlx, game->win);
-	mlx_destroy_display(game->mlx);
+	if (game->win)
+		mlx_destroy_window(game->mlx, game->win);
+	if (game->mlx)
+		mlx_destroy_display(game->mlx);
 	if (game->mlx)
 		free(game->mlx);
 	exit(0);
+}
+
+void	print_moves(int *moves, t_game *game)
+{
+	char		*mv_str;
+
+	ft_printf("Number of moves: %i\n", ++(*moves));
+	mv_str = ft_itoa(*moves);
+	if (!mv_str)
+	{
+		game->end_flag = 1;
+		return ;
+	}
+	mlx_put_image_to_window(game->mlx,
+		game->win, game->txt.w, 32 * 3, 32 * (game->map_height - 1));
+	mlx_string_put(game->mlx, game->win,
+		96, 31 * game->map_height, 0x00FFFFFF, mv_str);
+	free(mv_str);
 }
 
 char	*parse_map(char *file)

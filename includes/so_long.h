@@ -1,11 +1,20 @@
-#ifndef	SO_LONG_H
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   so_long.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nam-vu <nam-vu@student.42berlin.de>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/09 17:38:57 by nam-vu            #+#    #+#             */
+/*   Updated: 2023/12/09 17:38:57 by nam-vu           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef SO_LONG_H
 # define SO_LONG_H
 # include <mlx.h>
-# include <math.h>
 # include <fcntl.h>
-# include <stdio.h>
-# include <errno.h>
-#include "../libft/includes/libft.h"
+# include "../libft/includes/libft.h"
 # define BUFF_SIZE 100000
 
 typedef struct s_textures
@@ -26,7 +35,6 @@ typedef struct s_player
 	int		y;
 	char	orient;
 	int		score;
-	int		moves;
 }	t_player;
 
 typedef struct s_game
@@ -39,7 +47,7 @@ typedef struct s_game
 	int			coins;
 	int			end_flag;
 	t_player	player;
-	t_textures		txt;
+	t_textures	txt;
 }	t_game;
 
 //input_check.c
@@ -51,10 +59,12 @@ int		input_check(char *filename, t_game *game);
 //so_long.c
 int		main(int ac, char **av);
 int		init_textures(t_game *game);
+void	init_pointers(t_game *game);
 //utils.c
 int		exit_error(t_game *game);
 int		free_map(char **map);
 int		end_game(t_game *game);
+void	print_moves(int *moves, t_game *game);
 char	*parse_map(char *file);
 //hooks.c
 void	mv_right(t_game *game);

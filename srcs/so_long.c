@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "so_long.h"
-//#include "../includes/so_long.h"
 
 int	init_textures(t_game *game)
 {
@@ -33,21 +32,37 @@ int	init_textures(t_game *game)
 	return (1);
 }
 
+void	init_pointers(t_game *game)
+{
+	game->mlx = NULL;
+	game->win = NULL;
+	game->map = NULL;
+	game->txt.w = NULL;
+	game->txt.f = NULL;
+	game->txt.d = NULL;
+	game->txt.l = NULL;
+	game->txt.r = NULL;
+	game->txt.u = NULL;
+	game->txt.c = NULL;
+	game->txt.e = NULL;
+	game->player.orient = 'D';
+	game->player.score = 0;
+	game->end_flag = 0;
+}
+
 int	main(int ac, char **av)
 {
-	t_game		game;
+	t_game	game;
 
+	init_pointers(&game);
 	if (ac != 2 || !input_check(av[1], &game))
 		return (exit_error(&game));
 	game.mlx = mlx_init();
-	game.win = mlx_new_window(game.mlx, 32 * game.map_width,
-			32 * game.map_height, "so_long");
-	if (!init_textures(&game))
+	if (game.mlx)
+		game.win = mlx_new_window(game.mlx, 32 * game.map_width,
+				32 * game.map_height, "so_long");
+	if (!game.mlx || !game.win || !init_textures(&game))
 		return (exit_error(&game));
-	game.player.orient = 'D';
-	game.player.score = 0;
-	game.player.moves = 0;
-	game.end_flag = 0;
 	render_map(&game);
 	mlx_key_hook(game.win, key_hooks, &game);
 	mlx_hook(game.win, 17, 1L << 2, end_game, &game);

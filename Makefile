@@ -1,6 +1,6 @@
 NAME	= so_long
 
-SRC = so_long.c input_check.c utils.c hooks.c render.c
+SRC		= so_long.c input_check.c utils.c hooks.c render.c
 
 SRC_DIR = srcs/
 
@@ -10,20 +10,26 @@ INC_DIR = includes
 
 LIBFT	= libft/libft.a
 
-CC			= cc
+CC		= cc
 
-CFLAGS		= -Wall -Werror -Wextra
+CFLAGS	= -Wall -Werror -Wextra
+
+MLX		= mlx_linux/libmlx_Linux.a
 
 %.o: %.c
 	$(CC) $(CFLAGS) -I ./includes -I/usr/include -Imlx_linux -O3 -c  $< -o $@
 
 all: $(NAME)
 
-$(NAME): $(LIBFT) $(OBJ)
-	$(CC) $(OBJ) -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -Llibft -lft -o $(NAME) -fsanitize=address
+$(NAME): $(MLX) $(LIBFT) $(OBJ)
+	$(CC) $(OBJ) -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -Llibft -lft -fsanitize=address -g -o $(NAME)
 
 $(LIBFT):
 	make -C libft all
+
+$(MLX):
+	git clone https://github.com/42Paris/minilibx-linux.git mlx_linux
+	cd mlx_linux && ./configure
 
 clean:
 	rm -f $(OBJ)
@@ -32,6 +38,7 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 	rm -f $(LIBFT)
+	rm -rf mlx_linux
 
 re:	fclean all
 

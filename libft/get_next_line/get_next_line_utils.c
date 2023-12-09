@@ -41,7 +41,7 @@ char	*gnl_strdup(const char *s)
 	return (res);
 }
 
-void	ft_lstadd_back(t_gnl *data, char *content)
+void	gnl_lstadd_back(t_gnl *data, char *content)
 {
 	t_gnl_list	*temp;
 	t_gnl_list	*new;
@@ -68,7 +68,7 @@ void	ft_lstadd_back(t_gnl *data, char *content)
 	temp->next = new;
 }
 
-void	ft_lstclear(t_gnl_list **lst, void (*del)(void*))
+void	gnl_lstclear(t_gnl_list **lst, void (*del)(void*))
 {
 	t_gnl_list	*curr;
 	t_gnl_list	*next;
@@ -86,7 +86,7 @@ void	ft_lstclear(t_gnl_list **lst, void (*del)(void*))
 	}
 }
 
-char	*ft_lstjoin(t_gnl *data)
+char	*gnl_lstjoin(t_gnl *data)
 {
 	t_gnl_list	*temp;
 	char		*res;

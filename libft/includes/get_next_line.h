@@ -44,8 +44,8 @@ char	*get_next_line(int fd);
 
 size_t	gnl_strlen(const char *s, char mode);
 char	*gnl_strdup(const char *s);
-void	ft_lstadd_back(t_gnl *data, char *content);
-void	ft_lstclear(t_gnl_list **lst, void (*del)(void*));
-char	*ft_lstjoin(t_gnl *data);
+void	gnl_lstadd_back(t_gnl *data, char *content);
+void	gnl_lstclear(t_gnl_list **lst, void (*del)(void*));
+char	*gnl_lstjoin(t_gnl *data);
 
 #endif

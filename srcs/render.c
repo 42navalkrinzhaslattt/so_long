@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "so_long.h"
-//#include "../includes/so_long.h"
 
 void	put_item(int x, int y, t_game *game, char type)
 {
@@ -55,9 +54,11 @@ void	render_map(t_game *game)
 			else
 			{
 				put_item(x, y, game, 'o');
-				if (game->map[x][y] != '0' && game->map[x][y] != 'o')
-					put_item(x, y, game, game->map[x][y]);
+				if (game->map[y][x] != '0' && game->map[y][x] != 'o')
+					put_item(x, y, game, game->map[y][x]);
 			}
 		}
 	}
+	mlx_string_put(game->mlx, game->win, 0,
+		31 * game->map_height, 0X00FFFFFF, "Number of moves:0");
 }
