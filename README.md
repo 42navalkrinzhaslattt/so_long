@@ -1,78 +1,66 @@
 # so_long
 
-## So Long And Thanks for All the Fish!
+A small top-down 2D game in C on MiniLibX (X11): collect every coin, then reach the exit. Maps are loaded from `.ber` files and validated with a flood fill. The bonus build adds zombies that chase the player.
 
-A small 2D game project for 42 School, written in C, using the MiniLibX graphics library. The goal is to collect all collectibles and escape the map, practicing window management, event handling, textures, and basic gameplay logic.
+**Stack:** C · MiniLibX · X11 · Make    **Context:** 42 Berlin curriculum
 
 ---
 
 ## Table of Contents
-- [Foreword](#foreword)
-- [Objectives](#objectives)
+- [Overview](#overview)
 - [Features](#features)
 - [Requirements](#requirements)
-- [Installation](#installation)
+- [Build](#build)
 - [Usage](#usage)
 - [Map Format](#map-format)
-- [Bonus Features](#bonus-features)
+- [How It Works](#how-it-works)
+- [Bonus: Zombies](#bonus-zombies)
 - [Project Structure](#project-structure)
-- [License](#license)
 
 ---
 
-## Foreword
-This project is an introduction to 2D game development using C and the MiniLibX library. You will work with textures, sprites, and basic gameplay elements. The assets can be customized, but must respect copyright.
-
-## Objectives
-- Practice window management, event handling, and graphics in C
-- Use the MiniLibX library
-- Implement a simple 2D game with collectibles and an exit
-- Ensure code follows the 42 Norm and is memory-safe
+## Overview
+The game reads a map file, checks that it is playable, opens a window sized to the map (32x32 px per tile) and draws it from XPM textures. The player moves one tile per key press; walls block movement, coins are picked up by walking over them, and the exit only ends the game once every coin has been collected. Rendering is incremental: after the first full draw, each move redraws only the tiles that changed.
 
 ## Features
-- 2D top-down or profile view
-- Player moves with W, A, S, D (or arrow keys/ZQSD)
-- Collect all collectibles to unlock the exit
-- Walls block movement
-- Movement count displayed in the shell (bonus: on screen)
-- Clean exit on ESC or window close
-- Map validation (rectangular, surrounded by walls, valid path, etc.)
+- Movement with `W` `A` `S` `D`; the player sprite turns to face the direction of the last key
+- Move counter printed to the shell and drawn at the bottom of the window
+- Exit unlocks when all coins are collected
+- `ESC` or closing the window quits and frees all images, the window and the display
+- Map validation: `.ber` extension, rectangular, closed by walls, exactly one player and one exit, at least one coin, every coin and the exit reachable
+- Any invalid input prints `Error` / `Invalid map` and exits with a failure status
 
 ## Requirements
-- C compiler (cc)
-- MiniLibX (provided or install from source)
-- Make
-- macOS or Linux
+- Linux with X11 (the Makefile links `-lXext -lX11 -lm -lz`), including the X11 and zlib development headers
+- `cc`, Make and `git`
+- MiniLibX: not vendored; the Makefile clones [42Paris/minilibx-linux](https://github.com/42Paris/minilibx-linux) into `mlx_linux/` on the first build
 
-## Installation
-1. Clone the repository:
-   ```sh
-   git clone <your-repo-url>
-   cd so_long
-   ```
-2. Build the project:
-   ```sh
-   make
-   ```
-   For bonus features:
-   ```sh
-   make bonus
-   ```
+## Build
+```sh
+make          # clones and configures MiniLibX if needed, builds libft, then ./so_long
+make bonus    # same, with the zombie version, also built as ./so_long
+make clean    # remove object files (and libft objects)
+make fclean   # also remove ./so_long, libft.a and the mlx_linux/ clone
+make re       # fclean + all
+```
+
+Sources are compiled with `-Wall -Wextra -Werror -O3`; the binary is linked with `-fsanitize=address -g`.
 
 ## Usage
-Run the game with a valid map file:
+Run from the repository root (textures are loaded from `textures/` by relative path):
 ```sh
 ./so_long maps/map.ber
 ```
 
 ## Map Format
-- Map files must have a `.ber` extension
+- Map files must have a `.ber` extension and at least three rows
 - Allowed characters:
   - `0`: Empty space
   - `1`: Wall
   - `C`: Collectible
   - `E`: Exit
   - `P`: Player start
+  - `Z`: Zombie (bonus build only)
 - Map must be rectangular, surrounded by walls, with exactly one exit, one player, and at least one collectible.
 - Example:
   ```
@@ -82,26 +70,29 @@ Run the game with a valid map file:
   11111
   ```
 
-## Bonus Features
-- Enemies: player loses if touching a patrol
-- Sprite animation
-- Movement count displayed on screen
+## How It Works
+- **Loading:** the file is read once to measure it, then read again into a single buffer and split on newlines into a `char **` grid.
+- **Validation:** after the shape, border and character-count checks, a recursive flood fill starts at `P`. It marks every reached tile by switching it to lowercase (`0`->`o`, `C`->`c`, `E`->`e`, `P`->`p`) and counts the coins it reaches. The map is accepted only if the exit was reached and the reached coin count equals the total. The lowercase markers are then reused as the in-game state of the grid.
+- **Input:** `mlx_key_hook` dispatches X11 key codes to `mv_up` / `mv_down` / `mv_left` / `mv_right`; the window close event (17) is hooked to the same cleanup function as `ESC`.
+- **Drawing:** each move draws the floor under the old position, the item that was there, and the player sprite for the current direction at the new position. Only the move counter text is redrawn at the bottom.
+
+## Bonus: Zombies
+Built with `make bonus`. Zombies are placed on the map with `Z`.
+- After every player move, each zombie takes one step: toward the player if the player is on an adjacent tile, otherwise onto the first free floor tile it finds (up, down, left, right).
+- Walking into a zombie, or a zombie stepping onto the player, ends the game.
+- Zombies alternate between `z` and `Z` in the grid each turn so a single scan never moves the same zombie twice.
 
 ## Project Structure
 ```
-includes/        # Header files
-libft/           # Custom libft library
-maps/            # Example map files
-mlx_linux/       # MiniLibX (if needed)
-srcs/            # Main source files
-srcs_bonus/      # Bonus source files
-textures/        # XPM texture files
-Makefile         # Build rules
+includes/        # so_long.h, so_long_bonus.h
+libft/           # my libft (with ft_printf and get_next_line), built as libft.a
+maps/            # example map
+srcs/            # mandatory game: main, input_check, hooks, render, utils
+srcs_bonus/      # bonus game with zombies
+textures/        # 32x32 XPM sprites (walls, floor, coin, exit, player in 4 directions, zombie)
+Makefile         # build rules; fetches MiniLibX into mlx_linux/
 ```
-
-## License
-This project is for educational purposes at 42 School.
 
 ---
 
-**So Long, and thanks for all the fish!**
+42 Berlin project by Nam Lap Vu ([42navalkrinzhaslattt](https://github.com/42navalkrinzhaslattt)).
